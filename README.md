@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8" />
@@ -26,8 +27,14 @@
     --radius:10px;
     --touch:44px; /* minimum touch target */
     --max-width:1100px;
+
+    /* layout variables that will be updated by JS */
+    --cols: 6;            /* number of columns for grids */
+    --card-img-height: 120px;
+    --root-font-size: 16px;
   }
 
+  html { font-size: var(--root-font-size); }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
@@ -37,7 +44,6 @@
     color:#111;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    font-size:16px;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
   }
 
@@ -63,11 +69,11 @@
 
   .app-title{
     font-weight:800;
-    font-size:18px;
+    font-size:1.125rem; /* 18px */
     letter-spacing:0.2px;
     margin-left:6px;
   }
-  .app-sub{ font-size:13px; opacity:.9; margin-left:6px; color:rgba(255,255,255,.9) }
+  .app-sub{ font-size:0.8125rem; opacity:.9; margin-left:6px; color:rgba(255,255,255,.9) }
 
   .main-menu{
     display:flex;
@@ -85,7 +91,7 @@
     padding:10px 12px;
     background:transparent;
     color:#fff;
-    font-size:15px;
+    font-size:0.9375rem;
     font-weight:700;
     border:none;
     cursor:pointer;
@@ -139,7 +145,7 @@
     flex:0 0 auto;
   }
 
-  .content{ padding:18px; max-width:var(--max-width); margin:0 auto; padding-bottom:100px /*reserve for bottom nav*/; }
+  .content{ padding:18px; max-width:var(--max-width); margin:0 auto; padding-bottom:120px /*reserve for bottom nav*/; }
 
   h2{ color:var(--ribbon2); margin:8px 0 12px; font-size:clamp(18px,2.2vw,22px) }
 
@@ -168,15 +174,16 @@
   .toast{ background:var(--warn); color:#fff; padding:10px 14px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,.22) }
 
   .card{ background:var(--card); border-radius:12px; padding:12px; box-shadow:0 6px 18px rgba(0,0,0,.08); text-align:center }
-  .card img{ width:100%; height:120px; object-fit:contain; margin-bottom:8px; border-radius:8px; background:linear-gradient(180deg, #fafafa, #fff) }
-  .card-grid{ display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:var(--gap) }
+  .card img{ width:100%; height:var(--card-img-height); object-fit:contain; margin-bottom:8px; border-radius:8px; background:linear-gradient(180deg, #fafafa, #fff) }
+  /* use CSS var for column count */
+  .card-grid{ display:grid; grid-template-columns:repeat(var(--cols), minmax(0,1fr)); gap:var(--gap) }
 
-  .group-title{ font-size:18px; font-weight:700; margin:18px 0 8px; color:var(--ribbon2); border-bottom:2px solid #e6e9ee; padding-bottom:6px }
+  .group-title{ font-size:1.125rem; font-weight:700; margin:18px 0 8px; color:var(--ribbon2); border-bottom:2px solid #e6e9ee; padding-bottom:6px }
 
   /* Buchstaben-Ansicht: left letter + responsive grid */
   .letter-section{ display:grid; grid-template-columns:80px 1fr; gap:12px; align-items:start; margin:6px 0 }
   .letter-aside{ position:sticky; top:84px; align-self:start; font-size:28px; font-weight:900; color:var(--ribbon1); display:flex; align-items:center; justify-content:center }
-  .letter-grid{ display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px }
+  .letter-grid{ display:grid; grid-template-columns:repeat(var(--cols), minmax(0,1fr)); gap:12px }
 
   .muted{ color:var(--muted) }
   .small-btn{ padding:10px 12px; border-radius:8px; font-size:15px; min-height:var(--touch); cursor:pointer }
@@ -224,17 +231,19 @@
     font-weight:700;
   }
 
-  /* Responsive adjustments */
+  /* Responsive adjustments that still respect dynamic vars */
   @media (max-width:1200px){
-    .card-grid,.letter-grid{ grid-template-columns:repeat(4,minmax(0,1fr)) }
+    :root { /* fallback CSS-only hint, JS will overwrite vars */
+      --cols: 4;
+    }
   }
   @media (max-width:900px){
-    .card-grid,.letter-grid{ grid-template-columns:repeat(3,minmax(0,1fr)) }
+    :root { --cols: 3; }
     .letter-aside{ display:none } /* hide aside earlier to save space */
     .main-menu button{ font-size:14px; padding:10px 10px }
   }
   @media (max-width:700px){
-    .card-grid,.letter-grid{ grid-template-columns:repeat(2,minmax(0,1fr)) }
+    :root { --cols: 2; }
     .content{ padding:12px; padding-bottom:110px }
     .filter-row{ gap:8px }
     input[type="search"]{ min-width:120px; flex:1 1 60% }
@@ -244,14 +253,14 @@
     .bottom-nav{ display:flex }
   }
   @media (max-width:420px){
-    .card-grid,.letter-grid{ grid-template-columns:1fr }
+    :root { --cols: 1; --card-img-height: 140px; --root-font-size: 15px; }
     .filter-row{ flex-direction:column; align-items:stretch }
     input, select { width:100% }
     .small-btn{ padding:12px 14px; font-size:16px; min-height:44px }
     .main-menu{ gap:6px; padding:6px }
     .sub-menu{ gap:6px; padding:6px }
     h2{ font-size:18px }
-    .card img{ height:140px }
+    .card img{ height:var(--card-img-height) }
   }
 
   /* small visual improvements for touch */
@@ -441,6 +450,83 @@ function replaceUmlautsForXLS(s){
                   .replace(/Ä/g,"Ae").replace(/Ö/g,"Oe").replace(/Ü/g,"Ue").replace(/ß/g,"ss");
 }
 function uid(){ return Date.now() + Math.floor(Math.random()*1000); }
+
+/* ---------------- responsive layout logic ---------------- */
+/* Decide columns and image height based on actual viewport width.
+   We set CSS variables --cols and --card-img-height and --root-font-size so CSS adapts.
+*/
+function computeLayoutForWidth(width){
+  // default values (desktop)
+  let cols = 6;
+  let imgH = 120;
+  let rootFs = 16;
+
+  if(width >= 1400){
+    cols = 6; imgH = 120; rootFs = 16;
+  } else if(width >= 1100){
+    cols = 5; imgH = 120; rootFs = 16;
+  } else if(width >= 900){
+    cols = 4; imgH = 120; rootFs = 15.5;
+  } else if(width >= 700){
+    cols = 3; imgH = 140; rootFs = 15;
+  } else if(width >= 480){
+    cols = 2; imgH = 160; rootFs = 15;
+  } else { // narrow mobile
+    cols = 1; imgH = 140; rootFs = 14.5;
+  }
+
+  return { cols, imgH, rootFs };
+}
+
+let layoutDebounceTimer = null;
+function applyLayoutVars(){
+  const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+  const { cols, imgH, rootFs } = computeLayoutForWidth(w);
+  const doc = document.documentElement.style;
+  doc.setProperty('--cols', String(cols));
+  doc.setProperty('--card-img-height', imgH + 'px');
+  doc.setProperty('--root-font-size', rootFs + 'px');
+
+  // toggle bottom nav for small screens
+  const bottom = document.querySelector('.bottom-nav');
+  if(bottom){
+    if(w <= 700) bottom.style.display = 'flex';
+    else bottom.style.display = 'none';
+  }
+
+  // if mobile overlay is open and width increased enough, close overlay
+  const overlay = document.getElementById('mobile-menu-overlay');
+  if(overlay && overlay.style.display === 'block' && w > 900){
+    overlay.style.display = 'none';
+  }
+}
+
+function scheduleApplyLayoutVars(){
+  if(layoutDebounceTimer) clearTimeout(layoutDebounceTimer);
+  layoutDebounceTimer = setTimeout(() => {
+    applyLayoutVars();
+    layoutDebounceTimer = null;
+  }, 120);
+}
+
+/* Observe size changes with ResizeObserver on the root element as well,
+   so the layout adapts if the container changes (e.g., orientation or split-screen).
+*/
+let ro = null;
+function initLayoutObserver(){
+  try{
+    ro = new ResizeObserver(entries => {
+      for(const e of entries){
+        scheduleApplyLayoutVars();
+      }
+    });
+    ro.observe(document.documentElement);
+  }catch(e){
+    // fallback: listen to window resize/orientationchange
+    window.addEventListener('resize', scheduleApplyLayoutVars, { passive: true });
+    window.addEventListener('orientationchange', scheduleApplyLayoutVars, { passive: true });
+  }
+}
 
 /* ---------------- mobile menu toggle ---------------- */
 function toggleMenu(){
@@ -926,6 +1012,14 @@ window.onload = function(){
   anzeigenProdukte();
   anzeigenProdukteHochladen();
   anzeigenEinkaufswagen();
+
+  // layout handling
+  applyLayoutVars();
+  initLayoutObserver();
+
+  // also ensure layout updates on resize/orientation (fallback)
+  window.addEventListener('resize', scheduleApplyLayoutVars, { passive: true });
+  window.addEventListener('orientationchange', scheduleApplyLayoutVars, { passive: true });
 };
 
 </script>
