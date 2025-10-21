@@ -25,6 +25,7 @@
     --gap:12px;
     --radius:10px;
     --touch:44px; /* minimum touch target */
+    --max-width:1100px;
   }
 
   *{box-sizing:border-box}
@@ -37,6 +38,7 @@
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
     font-size:16px;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
   }
 
   /* Ribbon / Topbar */
@@ -45,13 +47,27 @@
     color:#fff;
     position:sticky;
     top:0;
-    z-index:40;
+    z-index:80;
     box-shadow:0 2px 6px rgba(0,0,0,.25);
     display:flex;
     flex-direction:column;
     gap:6px;
     padding:8px;
   }
+
+  .ribbon-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .app-title{
+    font-weight:800;
+    font-size:18px;
+    letter-spacing:0.2px;
+    margin-left:6px;
+  }
+  .app-sub{ font-size:13px; opacity:.9; margin-left:6px; color:rgba(255,255,255,.9) }
 
   .main-menu{
     display:flex;
@@ -60,6 +76,7 @@
     padding:6px;
     overflow-x:auto; /* allow horizontal scroll on very narrow screens */
     -webkit-overflow-scrolling:touch;
+    flex:1;
   }
 
   .main-menu button{
@@ -99,6 +116,7 @@
     cursor:pointer;
     box-shadow:0 2px 5px rgba(0,0,0,.2);
     transition:.12s;
+    z-index:90;
   }
   #save-button:hover{ background:#e67e22; transform:scale(1.04) }
 
@@ -121,7 +139,7 @@
     flex:0 0 auto;
   }
 
-  .content{ padding:18px; max-width:1100px; margin:0 auto; }
+  .content{ padding:18px; max-width:var(--max-width); margin:0 auto; padding-bottom:100px /*reserve for bottom nav*/; }
 
   h2{ color:var(--ribbon2); margin:8px 0 12px; font-size:clamp(18px,2.2vw,22px) }
 
@@ -146,7 +164,7 @@
   button.primary:hover{ background:var(--btnh) }
   button.green{ background:var(--accent2); color:#fff; border:none; padding:10px 12px; border-radius:10px; cursor:pointer }
 
-  .toast-area{ position:fixed; right:18px; bottom:18px; display:flex; flex-direction:column; gap:8px; z-index:60; max-width:92vw }
+  .toast-area{ position:fixed; right:18px; bottom:18px; display:flex; flex-direction:column; gap:8px; z-index:120; max-width:92vw }
   .toast{ background:var(--warn); color:#fff; padding:10px 14px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,.22) }
 
   .card{ background:var(--card); border-radius:12px; padding:12px; box-shadow:0 6px 18px rgba(0,0,0,.08); text-align:center }
@@ -169,6 +187,43 @@
   /* Upload list should be vertical */
   #produkte-liste-hochladen { display:flex; flex-direction:column; gap:12px; }
 
+  /* Bottom navigation (mobile) */
+  .bottom-nav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    display:none;
+    background:linear-gradient(90deg,var(--ribbon1),var(--ribbon2));
+    padding:8px;
+    gap:8px;
+    justify-content:space-around;
+    align-items:center;
+    z-index:100;
+    box-shadow:0 -4px 12px rgba(0,0,0,.12);
+  }
+  .bottom-nav button{
+    background:transparent;
+    border:none;
+    color:#fff;
+    font-size:18px;
+    min-width:56px;
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    cursor:pointer;
+    border-radius:8px;
+  }
+  .bottom-nav .save-mobile{
+    background:#f39c12;
+    color:#fff;
+    padding:8px 12px;
+    border-radius:10px;
+    font-weight:700;
+  }
+
   /* Responsive adjustments */
   @media (max-width:1200px){
     .card-grid,.letter-grid{ grid-template-columns:repeat(4,minmax(0,1fr)) }
@@ -180,12 +235,13 @@
   }
   @media (max-width:700px){
     .card-grid,.letter-grid{ grid-template-columns:repeat(2,minmax(0,1fr)) }
-    .content{ padding:12px }
+    .content{ padding:12px; padding-bottom:110px }
     .filter-row{ gap:8px }
-    input[type="search"]{ min-width:160px; flex:1 1 60% }
+    input[type="search"]{ min-width:120px; flex:1 1 60% }
     .sub-menu{ gap:6px; padding:6px }
-    #save-button{ position:fixed; right:14px; bottom:14px; top:auto; width:52px; height:52px; font-size:18px; border-radius:12px }
-    .toast-area{ left:14px; right:14px; bottom:14px }
+    #save-button{ display:none } /* hide desktop save, use mobile save in bottom nav */
+    .toast-area{ left:14px; right:14px; bottom:84px }
+    .bottom-nav{ display:flex }
   }
   @media (max-width:420px){
     .card-grid,.letter-grid{ grid-template-columns:1fr }
@@ -195,26 +251,47 @@
     .main-menu{ gap:6px; padding:6px }
     .sub-menu{ gap:6px; padding:6px }
     h2{ font-size:18px }
+    .card img{ height:140px }
   }
 
   /* small visual improvements for touch */
   button:active, .small-btn:active { transform:translateY(1px) }
   .card { transition:transform .12s, box-shadow .12s }
   .card:active { transform:translateY(1px) }
+
+  /* Actions inside cards adapt on mobile */
+  .card .card-actions{ display:flex; gap:8px; justify-content:center; margin-top:8px }
+  @media (max-width:420px){
+    .card .card-actions{ flex-direction:row; gap:8px; }
+  }
 </style>
 </head>
 <body>
 
 <!-- Ribbon -->
 <div class="ribbon" role="navigation" aria-label="Hauptnavigation">
-  <div class="main-menu" id="main-menu">
-    <button onclick="showRibbon('produkte')" aria-label="Produkte">🛍️ Produkte</button>
-    <button class="cart" onclick="showRibbon('warenkorb')" aria-label="Warenkorb">
-      <svg viewBox="0 0 24 24" width="18" height="18" style="vertical-align:middle;margin-right:6px"><circle cx="8.5" cy="20" r="1.5"/><circle cx="17.5" cy="20" r="1.5"/><path d="M2 2h2l3.6 7.59A2 2 0 0 0 9 11h7a2 2 0 0 0 1.98-1.69L19.5 1.54A1 1 0 0 0 18 0H6" fill="none" stroke="white" stroke-width="2"/></svg>
-      Einkaufswagen
-    </button>
-    <button onclick="showRibbon('einstellungen')" aria-label="Einstellungen">⚙️ Einstellungen</button>
-    <!-- optional extra actions could go here -->
+  <div class="ribbon-row">
+    <div style="display:flex;align-items:center;gap:8px;flex:1;">
+      <div style="display:flex;align-items:center;">
+        <button id="menu-toggle" aria-label="Menü" title="Menü" onclick="toggleMenu()" style="background:transparent;border:none;color:white;font-size:18px;padding:6px;border-radius:8px">☰</button>
+      </div>
+      <div style="display:flex;flex-direction:column;justify-content:center;">
+        <div class="app-title">Einkaufszettel</div>
+        <div class="app-sub">Schnell Produkte verwalten & Warenkorb exportieren</div>
+      </div>
+    </div>
+
+    <div id="desktop-actions" style="display:flex;align-items:center;gap:8px">
+      <div class="main-menu" id="main-menu">
+        <button onclick="showRibbon('produkte')" aria-label="Produkte">🛍️ Produkte</button>
+        <button class="cart" onclick="showRibbon('warenkorb')" aria-label="Warenkorb">
+          <svg viewBox="0 0 24 24" width="18" height="18" style="vertical-align:middle;margin-right:6px"><circle cx="8.5" cy="20" r="1.5"/><circle cx="17.5" cy="20" r="1.5"/><path d="M2 2h2l3.6 7.59A2 2 0 0 0 9 11h7a2 2 0 0 0 1.98-1.69L19.5 1.54A1 1 0 0 0 18 0H6" fill="none" stroke="white" stroke-width="2"/></svg>
+          Einkaufswagen
+        </button>
+        <button onclick="showRibbon('einstellungen')" aria-label="Einstellungen">⚙️ Einstellungen</button>
+      </div>
+      <div id="save-button" title="Shop speichern" onclick="saveAll()" role="button" aria-label="Speichern">💾</div>
+    </div>
   </div>
 
   <div class="sub-menu" id="submenu-produkte" aria-hidden="false">
@@ -229,8 +306,25 @@
     <button onclick="showSection('produkte-hochladen')">Produkte hochladen</button>
     <button onclick="showSection('settings-speichern')">Speichern/Laden</button>
   </div>
+</div>
 
-  <div id="save-button" title="Shop speichern" onclick="saveAll()" role="button" aria-label="Speichern">💾</div>
+<!-- Mobile bottom nav -->
+<nav class="bottom-nav" role="navigation" aria-label="Mobile Navigation">
+  <button onclick="showRibbon('produkte')" aria-label="Produkte">🛍️</button>
+  <button onclick="showRibbon('warenkorb')" aria-label="Warenkorb">🧾</button>
+  <button onclick="showRibbon('einstellungen')" aria-label="Einstellungen">⚙️</button>
+  <button onclick="saveAll()" class="save-mobile" aria-label="Speichern">💾</button>
+</nav>
+
+<!-- Mobile overlay menu (for very small screens) -->
+<div id="mobile-menu-overlay" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5);">
+  <div style="position:absolute; left:8px; right:8px; top:64px; background:white; border-radius:12px; padding:12px; max-height:70vh; overflow:auto;">
+    <button style="display:block;width:100%;text-align:left;padding:12px;border-radius:8px;margin-bottom:6px" onclick="showRibbon('produkte'); toggleMenu()">🛍️ Produkte</button>
+    <button style="display:block;width:100%;text-align:left;padding:12px;border-radius:8px;margin-bottom:6px" onclick="showRibbon('warenkorb'); toggleMenu()">🧾 Einkaufswagen</button>
+    <button style="display:block;width:100%;text-align:left;padding:12px;border-radius:8px;margin-bottom:6px" onclick="showRibbon('einstellungen'); toggleMenu()">⚙️ Einstellungen</button>
+    <button style="display:block;width:100%;text-align:left;padding:12px;border-radius:8px;margin-top:6px;background:var(--btn);color:#fff;" onclick="saveAll(); toggleMenu()">💾 Speichern</button>
+    <div style="text-align:right;margin-top:8px"><button onclick="toggleMenu()" style="background:transparent;border:none;color:#666">Schließen ✕</button></div>
+  </div>
 </div>
 
 <!-- Content -->
@@ -328,6 +422,10 @@ let editIndex = null;
 let editGruppeIndex = null;
 let saved = true;
 
+/* placeholder SVG for products without image */
+const placeholderSVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80"><rect width="120" height="80" rx="8" fill="%23ffffff"/><g fill="%23888"><path d="M18 62h84v6H18z"/><path d="M18 22h84v6H18z"/><circle cx="36" cy="46" r="6"/><circle cx="84" cy="46" r="6"/></g></svg>';
+const placeholderDataUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(placeholderSVG);
+
 /* ---------------- utilities ---------------- */
 function notify(msg){
   const t = document.getElementById("toast");
@@ -343,6 +441,13 @@ function replaceUmlautsForXLS(s){
                   .replace(/Ä/g,"Ae").replace(/Ö/g,"Oe").replace(/Ü/g,"Ue").replace(/ß/g,"ss");
 }
 function uid(){ return Date.now() + Math.floor(Math.random()*1000); }
+
+/* ---------------- mobile menu toggle ---------------- */
+function toggleMenu(){
+  const overlay = document.getElementById('mobile-menu-overlay');
+  if(!overlay) return;
+  overlay.style.display = overlay.style.display === 'none' || overlay.style.display === '' ? 'block' : 'none';
+}
 
 /* ---------------- navigation ---------------- */
 function showRibbon(name){
@@ -373,6 +478,7 @@ function showSection(id){
 function sortGroups(){ produktgruppen.sort((a,b)=>a.localeCompare(b,'de')); }
 function updateGruppeSelect(){
   const sel = document.getElementById("gruppe-select");
+  if(!sel) return;
   sel.innerHTML = '<option value="">-- keine Gruppe --</option>';
   sortGroups();
   produktgruppen.forEach(g=>{
@@ -443,6 +549,22 @@ function entferneGruppe(i){
 function resetGruppeForm(){ editGruppeIndex = null; document.getElementById("gruppe-input").value = ""; }
 
 /* ---------------- produkte ---------------- */
+function imgSrcOrPlaceholder(src){
+  return src && src.length>0 ? src : placeholderDataUrl;
+}
+
+function bauenProduktCardHTML(p){
+  const src = imgSrcOrPlaceholder(p.bild);
+  // use loading="lazy" and onerror fallback
+  return `
+    <img src="${src}" alt="${escapeHtmlAttr(p.name)}" loading="lazy" onerror="this.src='${placeholderDataUrl}'" />
+    <div style="font-weight:700;margin:6px 0">${escapeHtmlText(p.name)}</div>
+    <div class="muted" style="font-size:13px;margin-bottom:8px">${escapeHtmlText(p.gruppe || 'Keine Gruppe')}</div>
+    <div style="font-weight:700">${Number(p.preis).toFixed(2)} CHF</div>
+    <div class="card-actions" style="margin-top:8px"><button class="small-btn" onclick="produktZumEinkaufswagenID('${p.id}')">🛒</button></div>
+  `;
+}
+
 function anzeigenProdukte(){
   const container = document.getElementById("produkte-liste");
   container.innerHTML = "";
@@ -472,13 +594,7 @@ function anzeigenProdukte(){
       arr.forEach(p => {
         const card = document.createElement("div");
         card.className = "card";
-        card.innerHTML = `
-          <img src="${p.bild || ''}" alt="${p.name}" />
-          <div style="font-weight:700;margin:6px 0">${p.name}</div>
-          <div class="muted" style="font-size:13px;margin-bottom:8px">${p.gruppe || 'Keine Gruppe'}</div>
-          <div style="font-weight:700">${p.preis.toFixed(2)} CHF</div>
-          <div style="margin-top:8px"><button class="small-btn" onclick="produktZumEinkaufswagenID('${p.id}')">🛒</button></div>
-        `;
+        card.innerHTML = bauenProduktCardHTML(p);
         grid.appendChild(card);
       });
       section.appendChild(aside);
@@ -506,13 +622,7 @@ function anzeigenProdukte(){
     groups[g].sort((a,b)=>a.name.localeCompare(b.name,'de')).forEach(p => {
       const card = document.createElement("div");
       card.className = "card";
-      card.innerHTML = `
-        <img src="${p.bild || ''}" alt="${p.name}" />
-        <div style="font-weight:700;margin:6px 0">${p.name}</div>
-        <div class="muted" style="font-size:13px;margin-bottom:8px">${p.gruppe || 'Keine Gruppe'}</div>
-        <div style="font-weight:700">${p.preis.toFixed(2)} CHF</div>
-        <div style="margin-top:8px"><button class="small-btn" onclick="produktZumEinkaufswagenID('${p.id}')">🛒</button></div>
-      `;
+      card.innerHTML = bauenProduktCardHTML(p);
       grid.appendChild(card);
     });
     container.appendChild(grid);
@@ -532,10 +642,10 @@ function anzeigenProdukteHochladen(){
     card.style.marginBottom = "10px";
     card.innerHTML = `
       <div style="display:flex;gap:12px;align-items:center">
-        <img src="${p.bild || ''}" alt="${p.name}" style="width:72px;height:72px;object-fit:contain;border-radius:8px"/>
+        <img src="${imgSrcOrPlaceholder(p.bild)}" alt="${escapeHtmlAttr(p.name)}" style="width:72px;height:72px;object-fit:contain;border-radius:8px" loading="lazy" onerror="this.src='${placeholderDataUrl}'"/>
         <div style="flex:1">
-          <div style="font-weight:700">${p.name}</div>
-          <div class="muted">${p.preis.toFixed(2)} CHF • ${p.gruppe || 'Keine Gruppe'}</div>
+          <div style="font-weight:700">${escapeHtmlText(p.name)}</div>
+          <div class="muted">${Number(p.preis).toFixed(2)} CHF • ${escapeHtmlText(p.gruppe || 'Keine Gruppe')}</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
           <button class="small-btn" onclick="bearbeiteProdukt(${originalIndex})">✏️</button>
@@ -638,10 +748,10 @@ function anzeigenEinkaufswagen(){
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = `
-        <img src="${item.produkt.bild || ''}" alt="${item.produkt.name}" />
-        <div style="font-weight:700;margin:6px 0">${item.produkt.name}</div>
-        <div class="muted">${item.produkt.preis.toFixed(2)} CHF × ${item.menge}</div>
-        <div style="margin-top:8px">
+        <img src="${imgSrcOrPlaceholder(item.produkt.bild)}" alt="${escapeHtmlAttr(item.produkt.name)}" loading="lazy" onerror="this.src='${placeholderDataUrl}'" />
+        <div style="font-weight:700;margin:6px 0">${escapeHtmlText(item.produkt.name)}</div>
+        <div class="muted">${Number(item.produkt.preis).toFixed(2)} CHF × ${item.menge}</div>
+        <div style="margin-top:8px" class="card-actions">
           <button class="small-btn" onclick="mengeAendern(${idx},-1)">➖</button>
           <button class="small-btn" onclick="mengeAendern(${idx},1)">➕</button>
           <button class="small-btn" onclick="entferneAusWarenkorb(${idx})">❌</button>
@@ -796,6 +906,14 @@ function resetInputs(){
   document.getElementById("preis-input").value = "";
   document.getElementById("gruppe-select").value = "";
   editIndex = null;
+}
+
+/* small helpers to escape HTML used in templates */
+function escapeHtmlText(s){
+  return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+}
+function escapeHtmlAttr(s){
+  return String(s).replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
 }
 
 /* ---------------- init ---------------- */
