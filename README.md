@@ -21,73 +21,216 @@
     --danger:#e74c3c;
     --card:#ffffff;
     --muted:#6b7280;
+
+    --gap:12px;
+    --radius:10px;
+    --touch:44px; /* minimum touch target */
   }
+
   *{box-sizing:border-box}
-  body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);margin:0;color:#111}
-  .ribbon{background:linear-gradient(90deg,var(--ribbon1),var(--ribbon2));color:#fff;position:sticky;top:0;z-index:40;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-  .main-menu{display:flex;align-items:center;gap:8px;padding:8px}
-  .main-menu button{flex:1;padding:12px 10px;background:transparent;color:#fff;font-size:16px;font-weight:700;border:none;cursor:pointer;border-radius:8px;transition:.18s}
-  .main-menu button:hover{background:var(--accent)}
-  .main-menu .cart{display:flex;align-items:center;gap:8px;justify-content:center}
-  #save-button{position:absolute;right:10px;top:8px;width:36px;height:36px;border-radius:50%;background:#f39c12;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,.2);transition:.12s}
-  #save-button:hover{background:#e67e22;transform:scale(1.04)}
-  .sub-menu{display:flex;justify-content:center;gap:8px;background:#16a085;padding:8px}
-  .sub-menu button{padding:8px 14px;background:#1abc9c;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer}
-  .content{padding:18px}
-  h2{color:var(--ribbon2);margin:8px 0 12px}
-  .filter-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-  input,select{padding:10px;border-radius:8px;border:1px solid #cbd5e1;font-size:14px;background:#fff}
-  button.primary{background:var(--btn);color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
-  button.primary:hover{background:var(--btnh)}
-  button.green{background:var(--accent2);color:#fff;border:none;padding:10px 12px;border-radius:10px;cursor:pointer}
-  .toast-area{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:60}
-  .toast{background:var(--warn);color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.22)}
-  .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.08);text-align:center}
-  .card img{width:100px;height:100px;object-fit:contain;margin-bottom:8px}
-  .card-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
-  .group-title{font-size:18px;font-weight:700;margin:18px 0 8px;color:var(--ribbon2);border-bottom:2px solid #e6e9ee;padding-bottom:6px}
-  /* Buchstaben-Ansicht: left letter + 6-column grid */
-  .letter-section{display:grid;grid-template-columns:80px 1fr;gap:12px;align-items:start;margin:6px 0}
-  .letter-aside{position:sticky;top:84px;align-self:start;font-size:28px;font-weight:900;color:var(--ribbon1);display:flex;align-items:center;justify-content:center}
-  .letter-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
-  .muted{color:var(--muted)}
-  .small-btn{padding:6px 8px;border-radius:8px;font-size:13px}
-  #gesamtpreis{font-weight:800;color:var(--danger);margin-top:10px}
-  .controls-wrap{display:flex;gap:8px;flex-wrap:wrap}
-  /* Upload list should be vertical (fixes display errors) */
+  html,body{height:100%}
+  body{
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background:var(--bg);
+    margin:0;
+    color:#111;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    font-size:16px;
+  }
+
+  /* Ribbon / Topbar */
+  .ribbon{
+    background:linear-gradient(90deg,var(--ribbon1),var(--ribbon2));
+    color:#fff;
+    position:sticky;
+    top:0;
+    z-index:40;
+    box-shadow:0 2px 6px rgba(0,0,0,.25);
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    padding:8px;
+  }
+
+  .main-menu{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:6px;
+    overflow-x:auto; /* allow horizontal scroll on very narrow screens */
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .main-menu button{
+    flex:0 0 auto; /* don't force full stretch on small screens */
+    min-width:64px;
+    padding:10px 12px;
+    background:transparent;
+    color:#fff;
+    font-size:15px;
+    font-weight:700;
+    border:none;
+    cursor:pointer;
+    border-radius:8px;
+    transition:.16s;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .main-menu button:hover{ background:rgba(255,255,255,0.04) }
+
+  .main-menu .cart{ display:inline-flex; align-items:center; gap:8px; justify-content:center; }
+
+  /* Save button: desktop top-right, mobile fixed bottom-right */
+  #save-button{
+    position:absolute;
+    right:10px;
+    top:8px;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:#f39c12;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+    cursor:pointer;
+    box-shadow:0 2px 5px rgba(0,0,0,.2);
+    transition:.12s;
+  }
+  #save-button:hover{ background:#e67e22; transform:scale(1.04) }
+
+  .sub-menu{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    background:#16a085;
+    padding:8px;
+    overflow-x:auto;
+  }
+  .sub-menu button{
+    padding:8px 12px;
+    background:#1abc9c;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+    flex:0 0 auto;
+  }
+
+  .content{ padding:18px; max-width:1100px; margin:0 auto; }
+
+  h2{ color:var(--ribbon2); margin:8px 0 12px; font-size:clamp(18px,2.2vw,22px) }
+
+  .filter-row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:12px }
+  input,select{
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #cbd5e1;
+    font-size:14px;
+    background:#fff;
+    min-height:var(--touch);
+  }
+
+  button.primary{
+    background:var(--btn);
+    color:#fff;
+    border:none;
+    padding:10px 14px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  button.primary:hover{ background:var(--btnh) }
+  button.green{ background:var(--accent2); color:#fff; border:none; padding:10px 12px; border-radius:10px; cursor:pointer }
+
+  .toast-area{ position:fixed; right:18px; bottom:18px; display:flex; flex-direction:column; gap:8px; z-index:60; max-width:92vw }
+  .toast{ background:var(--warn); color:#fff; padding:10px 14px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,.22) }
+
+  .card{ background:var(--card); border-radius:12px; padding:12px; box-shadow:0 6px 18px rgba(0,0,0,.08); text-align:center }
+  .card img{ width:100%; height:120px; object-fit:contain; margin-bottom:8px; border-radius:8px; background:linear-gradient(180deg, #fafafa, #fff) }
+  .card-grid{ display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:var(--gap) }
+
+  .group-title{ font-size:18px; font-weight:700; margin:18px 0 8px; color:var(--ribbon2); border-bottom:2px solid #e6e9ee; padding-bottom:6px }
+
+  /* Buchstaben-Ansicht: left letter + responsive grid */
+  .letter-section{ display:grid; grid-template-columns:80px 1fr; gap:12px; align-items:start; margin:6px 0 }
+  .letter-aside{ position:sticky; top:84px; align-self:start; font-size:28px; font-weight:900; color:var(--ribbon1); display:flex; align-items:center; justify-content:center }
+  .letter-grid{ display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px }
+
+  .muted{ color:var(--muted) }
+  .small-btn{ padding:10px 12px; border-radius:8px; font-size:15px; min-height:var(--touch); cursor:pointer }
+
+  #gesamtpreis{ font-weight:800; color:var(--danger); margin-top:10px }
+  .controls-wrap{ display:flex; gap:8px; flex-wrap:wrap }
+
+  /* Upload list should be vertical */
   #produkte-liste-hochladen { display:flex; flex-direction:column; gap:12px; }
+
   /* Responsive adjustments */
-  @media (max-width:1100px){.card-grid,.letter-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
-  @media (max-width:800px){.card-grid,.letter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}; .letter-aside{display:none}}
-  @media (max-width:420px){.card-grid,.letter-grid{grid-template-columns:1fr}}
+  @media (max-width:1200px){
+    .card-grid,.letter-grid{ grid-template-columns:repeat(4,minmax(0,1fr)) }
+  }
+  @media (max-width:900px){
+    .card-grid,.letter-grid{ grid-template-columns:repeat(3,minmax(0,1fr)) }
+    .letter-aside{ display:none } /* hide aside earlier to save space */
+    .main-menu button{ font-size:14px; padding:10px 10px }
+  }
+  @media (max-width:700px){
+    .card-grid,.letter-grid{ grid-template-columns:repeat(2,minmax(0,1fr)) }
+    .content{ padding:12px }
+    .filter-row{ gap:8px }
+    input[type="search"]{ min-width:160px; flex:1 1 60% }
+    .sub-menu{ gap:6px; padding:6px }
+    #save-button{ position:fixed; right:14px; bottom:14px; top:auto; width:52px; height:52px; font-size:18px; border-radius:12px }
+    .toast-area{ left:14px; right:14px; bottom:14px }
+  }
+  @media (max-width:420px){
+    .card-grid,.letter-grid{ grid-template-columns:1fr }
+    .filter-row{ flex-direction:column; align-items:stretch }
+    input, select { width:100% }
+    .small-btn{ padding:12px 14px; font-size:16px; min-height:44px }
+    .main-menu{ gap:6px; padding:6px }
+    .sub-menu{ gap:6px; padding:6px }
+    h2{ font-size:18px }
+  }
+
+  /* small visual improvements for touch */
+  button:active, .small-btn:active { transform:translateY(1px) }
+  .card { transition:transform .12s, box-shadow .12s }
+  .card:active { transform:translateY(1px) }
 </style>
 </head>
 <body>
 
 <!-- Ribbon -->
-<div class="ribbon">
-  <div class="main-menu">
-    <button onclick="showRibbon('produkte')">Produkte</button>
-    <button class="cart" onclick="showRibbon('warenkorb')">
+<div class="ribbon" role="navigation" aria-label="Hauptnavigation">
+  <div class="main-menu" id="main-menu">
+    <button onclick="showRibbon('produkte')" aria-label="Produkte">🛍️ Produkte</button>
+    <button class="cart" onclick="showRibbon('warenkorb')" aria-label="Warenkorb">
       <svg viewBox="0 0 24 24" width="18" height="18" style="vertical-align:middle;margin-right:6px"><circle cx="8.5" cy="20" r="1.5"/><circle cx="17.5" cy="20" r="1.5"/><path d="M2 2h2l3.6 7.59A2 2 0 0 0 9 11h7a2 2 0 0 0 1.98-1.69L19.5 1.54A1 1 0 0 0 18 0H6" fill="none" stroke="white" stroke-width="2"/></svg>
       Einkaufswagen
     </button>
-    <button onclick="showRibbon('einstellungen')">⚙️ Einstellungen</button>
-    <div id="save-button" title="Shop speichern" onclick="saveAll()">💾</div>
+    <button onclick="showRibbon('einstellungen')" aria-label="Einstellungen">⚙️ Einstellungen</button>
+    <!-- optional extra actions could go here -->
   </div>
 
-  <div class="sub-menu" id="submenu-produkte">
+  <div class="sub-menu" id="submenu-produkte" aria-hidden="false">
     <button onclick="showSection('produkte-alle')">Alle Produkte</button>
   </div>
-  <div class="sub-menu" id="submenu-warenkorb" style="display:none">
+  <div class="sub-menu" id="submenu-warenkorb" style="display:none" aria-hidden="true">
     <button onclick="showSection('warenkorb-uebersicht')">Übersicht</button>
   </div>
-  <div class="sub-menu" id="submenu-einstellungen" style="display:none">
+  <div class="sub-menu" id="submenu-einstellungen" style="display:none" aria-hidden="true">
     <button onclick="showSection('settings-allgemein')">Allgemein</button>
     <button onclick="showSection('produktgruppen')">Produktgruppen</button>
     <button onclick="showSection('produkte-hochladen')">Produkte hochladen</button>
     <button onclick="showSection('settings-speichern')">Speichern/Laden</button>
   </div>
+
+  <div id="save-button" title="Shop speichern" onclick="saveAll()" role="button" aria-label="Speichern">💾</div>
 </div>
 
 <!-- Content -->
@@ -96,29 +239,29 @@
   <div id="produkte-alle">
     <h2>Alle Produkte</h2>
     <div class="filter-row">
-      <input id="such-produkte" type="search" placeholder="🔎 Produkt suchen..." oninput="anzeigenProdukte()" />
+      <input id="such-produkte" type="search" placeholder="🔎 Produkt suchen..." oninput="anzeigenProdukte()" aria-label="Produkt suchen" />
       <label>
-        Filter:
-        <select id="filter-mode" onchange="anzeigenProdukte()">
+        <span class="muted" style="margin-right:6px">Filter:</span>
+        <select id="filter-mode" onchange="anzeigenProdukte()" aria-label="Filtermodus">
           <option value="none">Kein Filter</option>
           <option value="buchstabe">Sortieren nach Buchstaben A–Z</option>
         </select>
       </label>
       <div style="flex:1"></div>
     </div>
-    <div id="produkte-liste"></div>
+    <div id="produkte-liste" aria-live="polite"></div>
   </div>
 
   <!-- EINKAUFSWAGEN -->
   <div id="warenkorb-uebersicht" style="display:none">
     <h2>Einkaufswagen</h2>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
-      <input id="such-warenkorb" type="search" placeholder="🔎 Im Warenkorb suchen..." oninput="anzeigenEinkaufswagen()" />
+      <input id="such-warenkorb" type="search" placeholder="🔎 Im Warenkorb suchen..." oninput="anzeigenEinkaufswagen()" aria-label="Warenkorb suchen" />
       <div style="flex:1"></div>
-      <button class="green" onclick="exportWarenkorbXLS()">📄 Export (.xls)</button>
-      <button class="green" onclick="exportWarenkorbPDF()">📝 Export (PDF)</button>
+      <button class="green" onclick="exportWarenkorbXLS()" aria-label="Export als XLS">📄 Export (.xls)</button>
+      <button class="green" onclick="exportWarenkorbPDF()" aria-label="Export als PDF">📝 Export (PDF)</button>
     </div>
-    <div id="einkaufswagen-liste"></div>
+    <div id="einkaufswagen-liste" aria-live="polite"></div>
     <div id="gesamtpreis">Gesamt: 0.00 CHF</div>
   </div>
 
@@ -131,7 +274,7 @@
   <div id="produktgruppen" style="display:none">
     <h2>Produktgruppen verwalten</h2>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <input id="gruppe-input" placeholder="Neue Gruppe" />
+      <input id="gruppe-input" placeholder="Neue Gruppe" aria-label="Neue Gruppe eingeben" />
       <button class="primary" onclick="hinzufuegenGruppe()">➕ Speichern</button>
       <button class="primary" onclick="resetGruppeForm()">Abbrechen</button>
     </div>
@@ -142,11 +285,11 @@
     <h2>Produkt hochladen / bearbeiten</h2>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
       <div class="card" style="text-align:left">
-        <label>Bild<br><input id="bild-input" type="file" accept="image/*" /></label><br><br>
-        <label>Produktname<br><input id="name-input" type="text" placeholder="Produktname" /></label><br><br>
-        <label>Preis (CHF)<br><input id="preis-input" type="number" step="0.01" placeholder="0.00" /></label><br><br>
+        <label>Bild<br><input id="bild-input" type="file" accept="image/*" aria-label="Produktbild" /></label><br><br>
+        <label>Produktname<br><input id="name-input" type="text" placeholder="Produktname" aria-label="Produktname" /></label><br><br>
+        <label>Preis (CHF)<br><input id="preis-input" type="number" step="0.01" placeholder="0.00" aria-label="Preis" /></label><br><br>
         <label>Gruppe<br>
-          <select id="gruppe-select"><option value="">-- keine Gruppe --</option></select>
+          <select id="gruppe-select" aria-label="Gruppe"><option value="">-- keine Gruppe --</option></select>
         </label>
         <div style="display:flex;gap:8px;margin-top:10px">
           <button class="primary" onclick="hinzufuegenProdukt()">Speichern</button>
@@ -171,7 +314,7 @@
 </div>
 
 <!-- Toast -->
-<div class="toast-area" id="toast"></div>
+<div class="toast-area" id="toast" aria-live="polite"></div>
 
 <!-- jsPDF für PDF-Export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -206,6 +349,10 @@ function showRibbon(name){
   document.getElementById("submenu-produkte").style.display = (name==='produkte') ? 'flex' : 'none';
   document.getElementById("submenu-warenkorb").style.display = (name==='warenkorb') ? 'flex' : 'none';
   document.getElementById("submenu-einstellungen").style.display = (name==='einstellungen') ? 'flex' : 'none';
+  document.getElementById("submenu-produkte").setAttribute('aria-hidden', name==='produkte' ? 'false' : 'true');
+  document.getElementById("submenu-warenkorb").setAttribute('aria-hidden', name==='warenkorb' ? 'false' : 'true');
+  document.getElementById("submenu-einstellungen").setAttribute('aria-hidden', name==='einstellungen' ? 'false' : 'true');
+
   if(name==='produkte') showSection('produkte-alle');
   if(name==='warenkorb') showSection('warenkorb-uebersicht');
   if(name==='einstellungen') showSection('settings-allgemein');
@@ -307,7 +454,7 @@ function anzeigenProdukte(){
   if(search) list = list.filter(p => p.name.toLowerCase().includes(search));
 
   if(mode === "buchstabe"){
-    // Group by starting letter, show letter aside on left and 6-column grid
+    // Group by starting letter, show letter aside on left and responsive grid
     const map = {};
     list.forEach(p => {
       const letter = (p.name && p.name.trim()[0]) ? p.name.trim()[0].toUpperCase() : "#";
@@ -341,7 +488,7 @@ function anzeigenProdukte(){
     return;
   }
 
-  // mode === none: Show products grouped by productgruppe (groups are headers A–Z)
+  // mode === none: Show products grouped by productgruppe
   const groups = {};
   produkte.forEach(p => {
     const g = p.gruppe || "Andere";
@@ -546,7 +693,8 @@ function exportWarenkorbXLS(){
   a.href = URL.createObjectURL(blob);
   a.download = "Einkaufszettel.xls";
   a.click();
-  URL.revokeObjectURL(a.href);
+  // revoke after short timeout to be safe on mobile
+  setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
   notify("XLS exportiert");
 }
 
@@ -618,7 +766,10 @@ function loadAll(){
 }
 function clearAll(){
   if(!confirm("Wirklich alles löschen?")) return;
-  localStorage.clear();
+  // safer: remove only our keys instead of clearing all localStorage
+  localStorage.removeItem("produkte");
+  localStorage.removeItem("einkaufswagen");
+  localStorage.removeItem("produktgruppen");
   produkte = []; einkaufswagen = []; produktgruppen = [];
   saved = false;
   updateGruppeSelect();
@@ -662,7 +813,3 @@ window.onload = function(){
 </script>
 </body>
 </html>
-
-
-
-
